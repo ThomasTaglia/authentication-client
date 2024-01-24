@@ -34,7 +34,7 @@ export default (
     },
     handler: async (req, res) => {
         const identifiers = await getUserIdentifiers.exec(
-            req.header("authorization") as string,
+            req.header("authorization") || "",
         );
         res.status(HttpStatusCode.Ok).send(identifiers);
     },
