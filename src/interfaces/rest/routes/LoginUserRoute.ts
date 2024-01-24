@@ -7,6 +7,7 @@ import { HttpStatusCode } from "axios";
 import AccessTokenDto from "../../../core/dtos/AccessTokenDto";
 import LoginUserDto from "../../../core/dtos/LoginUserDto";
 import LoginUser from "../../../core/usecases/LoginUser";
+import getAccessTokenDto from "../schemas/getAccessTokenDto";
 import generateHttpErrorResponse from "../utils/generateHttpErrorResponse";
 
 type ReqBody = LoginUserDto;
@@ -38,6 +39,11 @@ export default (loginUser: LoginUser): Route<void, void, ReqBody, ResBody> => ({
         responses: {
             [HttpStatusCode.Ok]: {
                 description: "User authenticated.",
+                content: {
+                    "application/json": {
+                        schema: getAccessTokenDto(),
+                    },
+                },
             },
         },
     },
