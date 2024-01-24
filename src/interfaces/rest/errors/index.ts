@@ -4,6 +4,7 @@ import { HttpStatusCode } from "axios";
 import {
     AccessTokenMalformedError,
     AccessTokenNotValidError,
+    InvalidAuthorizationHeader,
     UserEmailNotValidError,
     UserExistingEmailError,
     UserNotFoundError,
@@ -37,5 +38,9 @@ export const ERROR_HTTP_MAPPING: Record<
     [AccessTokenNotValidError.name]: {
         code: HttpStatusCode.Forbidden,
         status: "FORBIDDEN",
+    },
+    [InvalidAuthorizationHeader.name]: {
+        code: HttpStatusCode.Unauthorized,
+        status: "UNAUTHORIZED",
     },
 } as const;

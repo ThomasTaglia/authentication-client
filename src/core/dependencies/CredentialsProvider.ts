@@ -19,4 +19,5 @@ export default interface CredentialsProvider {
         accessToken: string,
         jwtSecret: string,
     ): Promise<AccessTokenClaims>;
+    extractAccessToken(authorization: string): Promise<string>;
 }

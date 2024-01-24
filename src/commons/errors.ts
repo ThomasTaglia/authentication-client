@@ -16,3 +16,5 @@ export class UserWrongPasswordError extends HandledError {}
 export class AccessTokenNotValidError extends HandledError {}
 
 export class AccessTokenMalformedError extends HandledError {}
+
+export class InvalidAuthorizationHeader extends HandledError {}

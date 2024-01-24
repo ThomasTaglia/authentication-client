@@ -1,13 +1,15 @@
-import User from "../entities/User";
+import AccessTokenClaims from "../entities/AccessTokenClaims";
 
 export default interface AuthIdentifiersDto {
     id: string;
     subject: string;
 }
 
-export function makeAuthIdentifiersDto(user: User): AuthIdentifiersDto {
+export function makeAuthIdentifiersDto(
+    claims: AccessTokenClaims,
+): AuthIdentifiersDto {
     return {
-        id: user.id,
-        subject: user.email,
+        id: claims.uid,
+        subject: claims.sub,
     };
 }

@@ -4,6 +4,7 @@ import { SwissknifeRequestService } from "@swissknife-api-components-nodejs/requ
 import { MongoClient } from "mongodb";
 
 import CreateUser from "../core/usecases/CreateUser";
+import GetUserIdentifiers from "../core/usecases/GetUserIdentifiers";
 import LoginUser from "../core/usecases/LoginUser";
 import VerifyAccessToken from "../core/usecases/VerifyAccessToken";
 import AuthClientCredentialsProvider from "../dependency-implementations/AuthClientCredentialsProvider";
@@ -42,6 +43,11 @@ const verifyAccessToken = new VerifyAccessToken(
     authClientCredentialsProvider,
     logger,
 );
+const getUserIdentifiers = new GetUserIdentifiers(
+    mongoUserRepository,
+    authClientCredentialsProvider,
+    logger,
+);
 
 // Express rest interface
 const expressRestInterface = getExpressRestInterface(
@@ -63,6 +69,7 @@ const expressRestInterface = getExpressRestInterface(
         createUser,
         loginUser,
         verifyAccessToken,
+        getUserIdentifiers,
     },
 );
 

@@ -12,6 +12,7 @@ import { isNil } from "lodash";
 import {
     AccessTokenMalformedError,
     AccessTokenNotValidError,
+    InvalidAuthorizationHeader,
     UserEmailNotValidError,
 } from "../../commons/errors";
 import CredentialsProvider from "../../core/dependencies/CredentialsProvider";
@@ -194,6 +195,34 @@ export default class AuthClientCredentialsProvider
                 throw new AccessTokenNotValidError(error.message);
             }
 
+            throw error;
+        }
+    }
+
+    async extractAccessToken(authorization: string): Promise<string> {
+        try {
+            if (!/^Bearer /.test(authorization)) {
+                throw new InvalidAuthorizationHeader(
+                    "The provided authorization header is not valid",
+                );
+            }
+            const accessToken = authorization.slice("Bearer ".length);
+            if (!accessToken) {
+                throw new AccessTokenMalformedError(
+                    "The provided access token is not valid",
+                );
+            }
+            return accessToken;
+        } catch (error: any) {
+            this.logger.error({
+                type: "AUTH_CLIENT_CREDENTIALS_PROVIDER",
+                action: "EXTRACT_ACCESS_TOKEN",
+                message: error.message,
+                details: {
+                    authorization,
+                    error: formatError(error),
+                },
+            });
             throw error;
         }
     }
