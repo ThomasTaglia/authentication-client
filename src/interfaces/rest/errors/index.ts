@@ -2,6 +2,8 @@ import { HttpError } from "@swissknife-api-components-nodejs/express-rest-interf
 import { HttpStatusCode } from "axios";
 
 import {
+    AccessTokenMalformedError,
+    AccessTokenNotValidError,
     UserEmailNotValidError,
     UserExistingEmailError,
     UserNotFoundError,
@@ -27,5 +29,13 @@ export const ERROR_HTTP_MAPPING: Record<
     [UserNotFoundError.name]: {
         code: HttpStatusCode.NotFound,
         status: "NOT_FOUND",
+    },
+    [AccessTokenMalformedError.name]: {
+        code: HttpStatusCode.BadRequest,
+        status: "BAD_REQUEST",
+    },
+    [AccessTokenNotValidError.name]: {
+        code: HttpStatusCode.Forbidden,
+        status: "FORBIDDEN",
     },
 } as const;

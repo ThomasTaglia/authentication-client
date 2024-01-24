@@ -2,8 +2,10 @@ import { ExpressRestInterface } from "@swissknife-api-components-nodejs/express-
 
 import CreateUser from "../../core/usecases/CreateUser";
 import LoginUser from "../../core/usecases/LoginUser";
+import VerifyAccessToken from "../../core/usecases/VerifyAccessToken";
 import CreateUserRoute from "./routes/CreateUserRoute";
 import LoginUserRoute from "./routes/LoginUserRoute";
+import VerifyAccessTokenRoute from "./routes/VerifyAccessTokenRoute";
 
 export default function getExpressRestInterface(
     agyoRequestService: ConstructorParameters<typeof ExpressRestInterface>[0],
@@ -12,7 +14,11 @@ export default function getExpressRestInterface(
         ConstructorParameters<typeof ExpressRestInterface>[2],
         "schemas"
     >,
-    usecases: { createUser: CreateUser; loginUser: LoginUser },
+    usecases: {
+        createUser: CreateUser;
+        loginUser: LoginUser;
+        verifyAccessToken: VerifyAccessToken;
+    },
 ) {
     return new ExpressRestInterface(
         agyoRequestService,
@@ -21,6 +27,7 @@ export default function getExpressRestInterface(
         [
             CreateUserRoute(usecases.createUser),
             LoginUserRoute(usecases.loginUser),
+            VerifyAccessTokenRoute(usecases.verifyAccessToken),
         ],
     );
 }

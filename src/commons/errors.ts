@@ -12,3 +12,7 @@ export class UserEmailNotValidError extends HandledError {}
 export class UserNotFoundError extends HandledError {}
 
 export class UserWrongPasswordError extends HandledError {}
+
+export class AccessTokenNotValidError extends HandledError {}
+
+export class AccessTokenMalformedError extends HandledError {}

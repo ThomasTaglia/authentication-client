@@ -1,14 +1,26 @@
 import { Logger } from "@swissknife-api-components-nodejs/logger";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
-import jwt from "jsonwebtoken";
+import jwt, {
+    JsonWebTokenError,
+    NotBeforeError,
+    TokenExpiredError,
+    decode,
+} from "jsonwebtoken";
+import { isNil } from "lodash";
 
-import { UserEmailNotValidError } from "../../commons/errors";
+import {
+    AccessTokenMalformedError,
+    AccessTokenNotValidError,
+    UserEmailNotValidError,
+} from "../../commons/errors";
 import CredentialsProvider from "../../core/dependencies/CredentialsProvider";
-import AuthTokenClaimsDto from "../../core/dtos/AuthTokenClaimsDto";
 import AccessToken from "../../core/entities/AccessToken";
+import AccessTokenClaims from "../../core/entities/AccessTokenClaims";
 import formatError from "../../core/utils/formatError";
+import { DecodedAccessTokenClaims } from "./authClientCredentialsTypes";
 import makeAccessToken from "./makeAccessToken";
+import makeAccessTokenClaims from "./makeAccessTokenClaims";
 
 export default class AuthClientCredentialsProvider
     implements CredentialsProvider
@@ -22,7 +34,7 @@ export default class AuthClientCredentialsProvider
     ): Promise<AccessToken> {
         try {
             const token = jwt.sign(
-                { uid: userId, sub: userEmail } as AuthTokenClaimsDto,
+                { uid: userId, sub: userEmail } as AccessTokenClaims,
                 jwtSecret,
                 {
                     expiresIn: "2h",
@@ -114,6 +126,74 @@ export default class AuthClientCredentialsProvider
                     error: formatError(error),
                 },
             });
+            throw error;
+        }
+    }
+
+    async getClaimsFromAccessToken(
+        accessToken: string,
+    ): Promise<AccessTokenClaims> {
+        try {
+            const decodedToken = decode(
+                accessToken,
+            ) as DecodedAccessTokenClaims;
+
+            if (
+                isNil(decodedToken) ||
+                isNil(decodedToken.sub) ||
+                isNil(decodedToken.uid)
+            ) {
+                throw new AccessTokenMalformedError(
+                    "The provided access token is not valid",
+                );
+            }
+            return makeAccessTokenClaims(decodedToken);
+        } catch (error: any) {
+            this.logger.error({
+                type: "AUTH_CLIENT_CREDENTIALS_PROVIDER",
+                action: "GET_CLAIMS_FROM_ACCESS_TOKEN",
+                message: error.message,
+                details: {
+                    accessToken,
+                    error: formatError(error),
+                },
+            });
+            throw error;
+        }
+    }
+
+    async verifyAccessToken(
+        accessToken: string,
+        jwtSecret: string,
+    ): Promise<AccessTokenClaims> {
+        try {
+            const claims = jwt.verify(
+                accessToken,
+                jwtSecret,
+            ) as DecodedAccessTokenClaims;
+            return makeAccessTokenClaims(claims);
+        } catch (error: any) {
+            this.logger.error({
+                type: "AUTH_CLIENT_CREDENTIALS_PROVIDER",
+                action: "VERIFY_ACCESS_TOKEN",
+                message: error.message,
+                details: {
+                    accessToken,
+                    jwtSecret,
+                    error: formatError(error),
+                },
+            });
+
+            if (error instanceof JsonWebTokenError) {
+                throw new AccessTokenMalformedError(error.message);
+            }
+            if (
+                error instanceof NotBeforeError ||
+                error instanceof TokenExpiredError
+            ) {
+                throw new AccessTokenNotValidError(error.message);
+            }
+
             throw error;
         }
     }

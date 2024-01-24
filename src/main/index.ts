@@ -5,6 +5,7 @@ import { MongoClient } from "mongodb";
 
 import CreateUser from "../core/usecases/CreateUser";
 import LoginUser from "../core/usecases/LoginUser";
+import VerifyAccessToken from "../core/usecases/VerifyAccessToken";
 import AuthClientCredentialsProvider from "../dependency-implementations/AuthClientCredentialsProvider";
 import MongoUserRepository from "../dependency-implementations/MongoUserRepository";
 import getExpressRestInterface from "../interfaces/rest";
@@ -36,6 +37,11 @@ const loginUser = new LoginUser(
     authClientCredentialsProvider,
     logger,
 );
+const verifyAccessToken = new VerifyAccessToken(
+    mongoUserRepository,
+    authClientCredentialsProvider,
+    logger,
+);
 
 // Express rest interface
 const expressRestInterface = getExpressRestInterface(
@@ -56,6 +62,7 @@ const expressRestInterface = getExpressRestInterface(
     {
         createUser,
         loginUser,
+        verifyAccessToken,
     },
 );
 
