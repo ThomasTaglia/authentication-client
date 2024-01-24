@@ -1,0 +1,21 @@
+version: "3.8"
+
+services:
+  mongo:
+    image: "mongo:latest"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=mongodb_root
+      - MONGO_INITDB_ROOT_PASSWORD=mongodb_root
+      - MONGO_INITDB_DATABASE=authenticationClient
+    ports:
+      - "27017:27017"
+  authentication-client-rest-interface:
+    build: "/"
+    environment:
+      - PUBLIC_URL=http://localhost:8080
+      - MONGO_REPOSITORY_URL=mongodb://mongodb_root:mongodb_root@mongo
+      - LOG_LEVEL=debug
+    ports:
+      - "8080:80"
+    depends_on:
+      - mongo
