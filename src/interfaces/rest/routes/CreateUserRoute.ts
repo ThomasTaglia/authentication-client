@@ -16,7 +16,7 @@ export default (createUser: CreateUser): Route<void, void, ReqBody, void> => ({
     requiresAuthentication: false,
     errorConverter: generateHttpErrorResponse,
     operationObject: {
-        tags: ["users"],
+        tags: ["authentication"],
         summary: "Create a new user.",
         requestBody: {
             content: {

@@ -19,7 +19,7 @@ export default (loginUser: LoginUser): Route<void, void, ReqBody, ResBody> => ({
     requiresAuthentication: false,
     errorConverter: generateHttpErrorResponse,
     operationObject: {
-        tags: ["users"],
+        tags: ["authentication"],
         summary: "Login user.",
         requestBody: {
             content: {
